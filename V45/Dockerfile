@@ -5,7 +5,7 @@ ENV GRIDDB_VERSION=4.5.0
 WORKDIR /root/
 
 RUN apt-get update \
-    && apt-get install -y dpkg wget python \
+    && apt-get install -y dpkg wget python vim \
     && apt-get clean all \
     && wget -q https://github.com/griddb/griddb/releases/download/v${GRIDDB_VERSION}/griddb_${GRIDDB_VERSION}_amd64.deb \
     && dpkg -i griddb_4.5.0_amd64.deb \
