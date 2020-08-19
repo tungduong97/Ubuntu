@@ -21,5 +21,5 @@ sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"dockerGridDB\"/g \
 VOLUME /var/lib/gridstore
 COPY start-griddb.sh /
 RUN chmod a+x /start-griddb.sh
-CMD ["/bin/bash", "/start-griddb.sh"]
 EXPOSE 10001
+CMD ["/bin/bash", "/start-griddb.sh"]
