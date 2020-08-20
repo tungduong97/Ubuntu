@@ -20,7 +20,7 @@ RUN set -eux; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
 	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
 	export GNUPGHOME="$(mktemp -d)"; \
-	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys 5BCB7FF7A827E2511F7B203BD11C06F0ABB361D4; \
+	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys 8EBC416815BAC874; \
 	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
 	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
@@ -32,9 +32,6 @@ RUN set -eux; \
 	gosu nobody true
 
 ENV GRIDDB_VERSION=4.5.0
-
-WORKDIR /root/
-
 RUN apt-get update \
     && apt-get install -y dpkg python \
     && apt-get clean all \
