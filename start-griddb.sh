@@ -1,24 +1,41 @@
 #!/bin/bash
 
-if [ -z "$GRIDDB_CLUSTER_NAME" ]
+if [ -z "$CONFIG" ]
 then
-    GRIDDB_CLUSTER_NAME=$(sed -nr "s/(GRIDDB_CLUSTER_NAME)=*//p" config.txt)
-    GRIDDB_USERNAME=$(sed -nr "s/(GRIDDB_USERNAME)=*//p" config.txt)
-    GRIDDB_PASSWORD=$(sed -nr "s/(GRIDDB_PASSWORD)=*//p" config.txt)
+	if [ -z "$GRIDDB_CLUSTER_NAME" ]
+	then
+		GRIDDB_CLUSTER_NAME=$(sed -nr "s/(GRIDDB_CLUSTER_NAME)=*//p" config.txt)
+		GRIDDB_USERNAME=$(sed -nr "s/(GRIDDB_USERNAME)=*//p" config.txt)
+		GRIDDB_PASSWORD=$(sed -nr "s/(GRIDDB_PASSWORD)=*//p" config.txt)
 
-    su - gsadm -c "gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD"
+		su - gsadm -c "gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD"
 
-    sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
+		sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
 
-    su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
+		su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
 
-    tail -f /var/lib/gridstore/log/gridstore*.log
+		tail -f /var/lib/gridstore/log/gridstore*.log
+	else
+		su - gsadm -c "gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD"
+
+		sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
+
+		su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
+
+		tail -f /var/lib/gridstore/log/gridstore*.log
+	fi
 else
-    su - gsadm -c "gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD"
 
-    sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
+GRIDDB_CLUSTER_NAME=$(sed -nr "s/(GRIDDB_CLUSTER_NAME)=*//p" /app/CONFIG.txt)
+GRIDDB_USERNAME=$(sed -nr "s/(GRIDDB_USERNAME)=*//p" /app/CONFIG.txt)
+GRIDDB_PASSWORD=$(sed -nr "s/(GRIDDB_PASSWORD)=*//p" /app/CONFIG.txt)
 
-    su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
+su - gsadm -c "gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD"
 
-    tail -f /var/lib/gridstore/log/gridstore*.log
+sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
+
+su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
+ln -sf /var/lib/gridstore/log /app/log
+tail -f /var/lib/gridstore/log/gridstore*.log
+
 fi
