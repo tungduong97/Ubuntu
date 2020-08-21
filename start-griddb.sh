@@ -12,7 +12,7 @@ then
 
     su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
 
-    tail -f /dev/null
+    tail -f /var/lib/gridstore/log/gridstore*.log
 else
     su - gsadm -c "gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD"
 
@@ -20,5 +20,5 @@ else
 
     su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
 
-    tail -f /dev/null
+    tail -f /var/lib/gridstore/log/gridstore*.log
 fi
