@@ -6,7 +6,9 @@ RUN apt-get update \
     && wget -q https://github.com/griddb/griddb/releases/download/v${GRIDDB_VERSION}/griddb_${GRIDDB_VERSION}_amd64.deb \
     && dpkg -i griddb_4.5.0_amd64.deb \
     && rm griddb_4.5.0_amd64.deb
-COPY start-griddb.sh config.txt /
+
+VOLUME /var/lib/gridstore
+COPY start-griddb.sh /
 RUN chmod a+x /start-griddb.sh
 EXPOSE 10001
 CMD ["/bin/bash", "/start-griddb.sh"]
