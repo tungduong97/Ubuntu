@@ -10,5 +10,6 @@ RUN apt-get update \
 VOLUME /var/lib/gridstore
 COPY start-griddb.sh /
 RUN chmod a+x /start-griddb.sh
+ENTRYPOINT ["/bin/bash", "/start-griddb.sh"]
 EXPOSE 10001
-CMD ["/bin/bash", "/start-griddb.sh"]
+CMD ["griddb"]
