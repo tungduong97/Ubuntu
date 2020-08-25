@@ -1,7 +1,7 @@
 #!/bin/bash
 
 var="$1"
-if [ "${1}" = 'griddb' ]
+if [ "${1}" = 'griddbd' ]
 then
 	GRIDDB_CLUSTER_NAME=$(sed -n 's|.*"clusterName":"\([^"]*\)".*|\1|p' /var/lib/gridstore/conf/gs_cluster.json)
 	if [ -z "$GRIDDB_CLUSTER_NAME" ]
