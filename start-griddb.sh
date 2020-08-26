@@ -27,20 +27,16 @@ else
 	if [ -z "$GRIDDB_CLUSTER_NAMES" ]
 	then
 		echo "Start griddb ! "
-		if [ -z "$GRIDDB_USERNAME" ]
-		then
-			echo "User name may be not set. use user name default is admin"
-		elif [ ! -z "$GRIDDB_PASSWORD" ] && [ -z "$GRIDDB_USERNAME" ]
-		then
-			su - gsadm -c "gs_passwd admin -p $GRIDDB_PASSWORD"
-		else 
-			sed -i "s/admin/${GRIDDB_USERNAME}/g" /var/lib/gridstore/conf/password
-		fi
 
 		if [ -z "$GRIDDB_USERNAME" ] && [ -z "$GRIDDB_PASSWORD" ]
 		then
 			echo "Password isn't set or null. Please check your password !"
+		elif [ ! -z "$GRIDDB_PASSWORD" ] && [ -z "$GRIDDB_USERNAME" ]
+		then
+			echo "User name may be not set. Use user name default is admin"
+			su - gsadm -c "gs_passwd admin -p $GRIDDB_PASSWORD"
 		else
+			sed -i "s/admin/${GRIDDB_USERNAME}/g" /var/lib/gridstore/conf/password
 			su - gsadm -c "gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD"
 		fi
 
