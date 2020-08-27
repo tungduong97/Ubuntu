@@ -26,7 +26,7 @@ VOLUME /var/lib/gridstore
 #config file for griddb
 COPY start-griddb.sh /
 RUN chmod a+x /start-griddb.sh
-RUN chmod 777 $GS_LOG
+RUN chmod chown -R root $GS_LOG
 
 ENTRYPOINT ["/bin/bash", "/start-griddb.sh"]
 EXPOSE 10001
