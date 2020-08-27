@@ -26,55 +26,35 @@ else
 	#Config for griddb sever with environment variable
 	if [ -z "$GRIDDB_CLUSTER_NAMES" ]
 	then
-		echo "Start griddb ! "
 
-		if [ -z "$GRIDDB_USERNAME" ] && [ -z "$GRIDDB_PASSWORD" ]
+		if [ ! -z "$NOTIFICATION_ADDRESS" ]
 		then
-			echo "Password isn't set or null. Please check your password !"
-		elif [ ! -z "$GRIDDB_PASSWORD" ] && [ -z "$GRIDDB_USERNAME" ]
-		then
-			echo "User name may be not set. Use user name default is admin"
-			su - gsadm -c "gs_passwd admin -p $GRIDDB_PASSWORD"
-		else
+			#Config multicast for griddb sever and start griddb sever with single node
 			sed -i "s/admin/${GRIDDB_USERNAME}/g" /var/lib/gridstore/conf/password
 			su - gsadm -c "gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD"
-		fi
-
-		if [ -z "$GRIDDB_CLUSTER_NAME" ]
-		then
-			echo "Clustername isn't set or null. Please check your Clustername !"
-		else
 			sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
-		fi
-
-		if [ -z "$NOTIFICATION_ADDRESS" ]
-		then
-			echo "Notification address may be not set. You can use user name default is 239.0.0.1 or your ip"
-		else
 			sed -i -e s/\"notificationAddress\":\"239.0.0.1\"/\"notificationAddress\":\"$NOTIFICATION_ADDRESS\"/g \/var/lib/gridstore/conf/gs_cluster.json
-		fi
-
-		if [ -z "$NOTIFICATION_PORT" ]
-		then
-			echo "Notification port may be not set. You can use user name default is 31999. If your address is ip please use port 10001"
-		else
 			sed -i -e s/\"notificationPort\":31999/\"notificationPort\":$NOTIFICATION_PORT/g \/var/lib/gridstore/conf/gs_cluster.json
-		fi
-
-		if [ -z "$GRIDDB_USERNAME" ]
-		then
-			su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u admin/$GRIDDB_PASSWORD" - gsadm
-		else
 			su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
+			tail -f /var/lib/gridstore/log/gridstore*.log
+		else
+			#Config setting for griddb sever and start griddb multi node
+			sed -i "s/admin/${GRIDDB_USERNAME}/g" /var/lib/gridstore/conf/password
+			su - gsadm -c "gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD"
+			sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
+			su -c "gs_startnode; gs_joincluster -s $IP_GRIDDB_NODE:10040 -c $GRIDDB_CLUSTER_NAMES -n $GRIDDB_NODE_NUM -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
+			tail -f /var/lib/gridstore/log/gridstore*.log
 		fi
-		tail -f /var/lib/gridstore/log/gridstore*.log
 
 	else
-		if [ -z "$GRIDDB_USERNAME" ]
+	
+		if [ ! -z "$NOTIFICATION_ADDRESS" ]
 		then
-			su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAMES -u admin/$GRIDDB_PASSWORD" - gsadm
+			#Start griddb with single node
+			su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
 		else
-			su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAMES -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
+			#Start griddb with multi node
+			su -c "gs_startnode; gs_joincluster -s $IP_GRIDDB_NODE:10040 -c $GRIDDB_CLUSTER_NAMES -n $GRIDDB_NODE_NUM -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD" - gsadm
 		fi
 		tail -f /var/lib/gridstore/log/gridstore*.log
 	fi
