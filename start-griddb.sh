@@ -15,12 +15,12 @@ then
 		sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
 		#Start griddb sever with single node
 		su -l gsadm
-		su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u admin/$GRIDDB_PASSWORD" - gsadm
+		gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u admin/$GRIDDB_PASSWORD
 		#Follow log after start griddb sever
 		tail -f /var/lib/gridstore/log/gridstore*.log
 	else
 		su -l gsadm
-		su -c "gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u admin/$GRIDDB_PASSWORD" - gsadm
+		gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u admin/$GRIDDB_PASSWORD
 		tail -f /var/lib/gridstore/log/gridstore*.log
 	fi
 else
