@@ -6,7 +6,7 @@ if [ "${1}" = 'griddb' ]
 then
 #Run images when parameter is griddbd
     GRIDDB_CLUSTER_NAME=$(sed -n 's|.*"clusterName":"\([^"]*\)".*|\1|p' /var/lib/gridstore/conf/gs_cluster.json)
-    if [ -z "$GRIDDB_CLUSTER_NAME" ]
+    if [ -z "$GRIDDB_PASSWORD" ]
     then
         #Config for griddb sever with value default
         GRIDDB_CLUSTER_NAME="dockergriddb"
@@ -27,14 +27,12 @@ then
         gs_joincluster -c $GRIDDB_CLUSTER_NAMES -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
         tail -f /var/lib/gridstore/log/gridstore*.log
     fi
-else
-    if [ "${1}" = 'griddbs' ]
-    then
-	    GRIDDB_CLUSTER_NAMES=$(sed -n 's|.*"clusterName":"\([^"]*\)".*|\1|p' /var/lib/gridstore/conf/gs_cluster.json)
-	    #Config for griddb sever with environment variable
-	    if [ -z "$GRIDDB_CLUSTER_NAMES" ]
-	    then
 
+	GRIDDB_CLUSTER_NAMES=$(sed -n 's|.*"clusterName":"\([^"]*\)".*|\1|p' /var/lib/gridstore/conf/gs_cluster.json)
+	#Config for griddb sever with environment variable
+	if [ -z "$GRIDDB_CLUSTER_NAMES" ]
+	then
+	
 		if [ ! -z "$NOTIFICATION_ADDRESS" ]
 		then
 		    #Config multicast for griddb sever and start griddb sever with single node
@@ -58,7 +56,7 @@ else
 		    tail -f /var/lib/gridstore/log/gridstore*.log
 		fi
 
-	    else
+	else
 
 		if [ ! -z "$NOTIFICATION_ADDRESS" ]
 		then
@@ -71,6 +69,5 @@ else
 		    gs_joincluster -s $IP_GRIDDB_NODE:10040 -c $GRIDDB_CLUSTER_NAMES -n $GRIDDB_NODE_NUM -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
 		fi
 		tail -f /var/lib/gridstore/log/gridstore*.log
-	    fi
 	fi
 fi
