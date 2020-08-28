@@ -10,8 +10,8 @@ then
     then
         #Config for griddb sever with value default
         GRIDDB_CLUSTER_NAME="dockergriddb"
-        GRIDDB_USERNAME="admin"
-        GRIDDB_PASSWORD="admin"
+        GRIDDB_USERNAME='admin'
+        GRIDDB_PASSWORD='admin'
         gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD
         sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
         #Start griddb sever with single node
@@ -21,10 +21,10 @@ then
         tail -f /var/lib/gridstore/log/gridstore*.log
     else
         GRIDDB_CLUSTER_NAMES=$(sed -n 's|.*"clusterName":"\([^"]*\)".*|\1|p' /var/lib/gridstore/conf/gs_cluster.json)
-        GRIDDB_USERNAME="admin"
-        GRIDDB_PASSWORD="admin"
+        GRIDDB_USERNAME='admin'
+        GRIDDB_PASSWORD='admin'
         gs_startnode -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
-        gs_passwd $GRIDDB_USERNAMES -p $GRIDDB_PASSWORD
+        gs_joincluster -c $GRIDDB_CLUSTER_NAMES -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
         tail -f /var/lib/gridstore/log/gridstore*.log
     fi
 else
