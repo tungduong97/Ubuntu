@@ -2,7 +2,7 @@
 
 #First parameter after run images
 var="$1"
-if [ "${1}" = 'griddb' ]
+if [ "${1}" = 'griddbd' ]
 then
 #Run images when parameter is griddbd
     GRIDDB_CLUSTER_NAME=$(sed -n 's|.*"clusterName":"\([^"]*\)".*|\1|p' /var/lib/gridstore/conf/gs_cluster.json)
@@ -30,7 +30,7 @@ then
 else
     GRIDDB_CLUSTER_NAMES=$(sed -n 's|.*"clusterName":"\([^"]*\)".*|\1|p' /var/lib/gridstore/conf/gs_cluster.json)
     #Config for griddb sever with environment variable
-    if [ -z "$GRIDDB_CLUSTER_NAMES" ] && [ "${1}" = 'griddbs' ]
+    if [ -z "$GRIDDB_CLUSTER_NAMES" ]
     then
 
         if [ ! -z "$NOTIFICATION_ADDRESS" ]
