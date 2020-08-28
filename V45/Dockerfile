@@ -28,4 +28,4 @@ RUN chmod a+x /start-griddb.sh
 USER gsadm
 ENTRYPOINT ["/bin/bash", "/start-griddb.sh"]
 EXPOSE 10001
-CMD ["griddb"]
+CMD ["griddbd"]
