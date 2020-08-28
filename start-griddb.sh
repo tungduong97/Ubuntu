@@ -18,6 +18,8 @@ then
 		#Follow log after start griddb sever
 		tail -f /var/lib/gridstore/log/gridstore*.log
 	else
+		GRIDDB_CLUSTER_NAME=$(sed -n 's|.*"clusterName":"\([^"]*\)".*|\1|p' /var/lib/gridstore/conf/gs_cluster.json)
+		GRIDDB_PASSWORD="admin"
 		gs_startnode; gs_joincluster -c $GRIDDB_CLUSTER_NAME -u admin/$GRIDDB_PASSWORD
 		tail -f /var/lib/gridstore/log/gridstore*.log
 	fi
