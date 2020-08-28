@@ -2,7 +2,7 @@
 
 #First parameter after run images
 var="$1"
-if [ "${1}" = 'griddbd' ]
+if [ "${1}" = 'griddb' ]
 then
 #Run images when parameter is griddbd
     GRIDDB_CLUSTER_NAME=$(sed -n 's|.*"clusterName":"\([^"]*\)".*|\1|p' /var/lib/gridstore/conf/gs_cluster.json)
