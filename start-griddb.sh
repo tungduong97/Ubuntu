@@ -1,5 +1,4 @@
 #!/bin/bash
-set -Eeuo pipefail
 #First parameter after run images
 if [ "${1:0:1}" = '-' ]; then
 	set -- griddb "$@"
