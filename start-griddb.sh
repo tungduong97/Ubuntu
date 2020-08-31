@@ -1,7 +1,10 @@
 #!/bin/bash
 
 #First parameter after run images
-var="$1"
+if [ "${1:0:1}" = '-' ]; then
+	set -- griddb "$@"
+fi
+
 if [ "${1}" = 'griddbd' ]
 then
 #Run images when parameter is griddbd
@@ -71,3 +74,5 @@ else
         tail -f /var/lib/gridstore/log/gridstore*.log
     fi
 fi
+
+exec "$@"
