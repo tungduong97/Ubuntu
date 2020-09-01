@@ -1,9 +1,9 @@
 #!/bin/bash
-#First parameter after run images
-if [ "${1:0:1}" = '-' ]; then
-	set -- griddb "$@"
-fi
 
+if [ "${1:0:1}" = '-' ]; then
+    set -- griddb "$@"
+fi
+#First parameter after run images
 if [ "${1}" = 'griddbd' ]
 then
 #Run images when parameter is griddbd
@@ -22,11 +22,13 @@ then
         #Follow log after start griddb sever
         tail -f /var/lib/gridstore/log/gridstore*.log
     else
-	GRIDDB_CLUSTER_NAME="dockergriddb"
+        GRIDDB_CLUSTER_NAMES=$(sed -n 's|.*"clusterName":"\([^"]*\)".*|\1|p' /var/lib/gridstore/conf/gs_cluster.json)
         GRIDDB_USERNAME='admin'
         GRIDDB_PASSWORD='admin'
+        gs_stopcluster -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
+        gs_stopnode -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
         gs_startnode -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
-        gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
+        gs_joincluster -c $GRIDDB_CLUSTER_NAMES -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
         tail -f /var/lib/gridstore/log/gridstore*.log
     fi
 else
@@ -43,7 +45,7 @@ else
             sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
             sed -i -e s/\"notificationAddress\":\"239.0.0.1\"/\"notificationAddress\":\"$NOTIFICATION_ADDRESS\"/g \/var/lib/gridstore/conf/gs_cluster.json
             sed -i -e s/\"notificationPort\":31999/\"notificationPort\":$NOTIFICATION_PORT/g \/var/lib/gridstore/conf/gs_cluster.json
-            #Restart griddb sever
+            #Start griddb sever
             gs_startnode -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
             gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
             tail -f /var/lib/gridstore/log/gridstore*.log
@@ -52,7 +54,7 @@ else
             sed -i "s/admin/${GRIDDB_USERNAME}/g" /var/lib/gridstore/conf/password
             gs_passwd $GRIDDB_USERNAME -p $GRIDDB_PASSWORD
             sed -i -e s/\"clusterName\":\"\"/\"clusterName\":\"$GRIDDB_CLUSTER_NAME\"/g \/var/lib/gridstore/conf/gs_cluster.json
-            #Restart griddb sever
+            #Start griddb sever
             gs_startnode -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
             gs_joincluster -s $IP_GRIDDB_NODE:10040 -c $GRIDDB_CLUSTER_NAME -n $GRIDDB_NODE_NUM -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
             tail -f /var/lib/gridstore/log/gridstore*.log
@@ -64,11 +66,11 @@ else
         then
             #Start griddb with single node
             gs_startnode -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
-            gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
+            gs_joincluster -c $GRIDDB_CLUSTER_NAMES -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
         else
             #Start griddb with multi node
             gs_startnode -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
-            gs_joincluster -s $IP_GRIDDB_NODE:10040 -c $GRIDDB_CLUSTER_NAME -n $GRIDDB_NODE_NUM -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
+            gs_joincluster -s $IP_GRIDDB_NODE:10040 -c $GRIDDB_CLUSTER_NAMES -n $GRIDDB_NODE_NUM -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
         fi
         tail -f /var/lib/gridstore/log/gridstore*.log
     fi
