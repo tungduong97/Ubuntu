@@ -28,5 +28,5 @@ COPY start-griddb.sh /
 RUN chmod a+x /start-griddb.sh
 USER gsadm
 ENTRYPOINT ["/bin/bash", "/start-griddb.sh"]
-EXPOSE PORTS
+EXPOSE $PORTS
 CMD ["griddb"]
