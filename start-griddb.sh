@@ -1,12 +1,17 @@
 #!/bin/bash
+
 if [ "${1:0:1}" = '-' ]; then
     set -- griddb "$@"
 fi
-isSystemInitialized() {
-    if [ ! -f /var/lib/gridstore/data ]; then
+
+checkSystemInitialize() {
+    if [ "$(ls -A /var/lib/gridstore/data)" ]; then
         return 1
     fi
+    return 0
 }
+checkSystemInitialize
+isSystemInitialized=$?
 
 # usage: read_env VAR [DEFAULT]
 #    ie: read_env 'XYZ_DB_PASSWORD' 'example'
@@ -28,13 +33,10 @@ save_config() {
     echo "GRIDDB_NODE_NUM=\"$GRIDDB_NODE_NUM\""         >> /var/lib/gridstore/conf/gridstore.conf
 }
 
-del_config() {
-    rm /var/lib/gridstore/conf/gridstore.conf
-}
 #First parameter after run images
 if [ "${1}" = 'griddb' ]
 then
-    if [ isSystemInitialized ]; then
+    if [ $isSystemInitialized = 0 ]; then
         read_env GRIDDB_CLUSTER_NAME "dockergriddb"
         read_env GRIDDB_USERNAME 'admin'
         read_env GRIDDB_PASSWORD 'admin'
@@ -68,18 +70,15 @@ then
 
         # Write to config file
         save_config
-        fi
-        # Read config file
+    fi
+    # Read config file
     . /var/lib/gridstore/conf/gridstore.conf
-        # delete config file
-        del_config
-        save_config
     # Start service
     gs_startnode -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
     if [ -z "$GRIDDB_NODE_NUM" ]; then
         gs_joincluster -c $GRIDDB_CLUSTER_NAME -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
     else
-        gs_joincluster -c $GRIDDB_CLUSTER_NAME  -n $GRIDDB_NODE_NUM -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD
+        gs_joincluster -c $GRIDDB_CLUSTER_NAME  -n $GRIDDB_NODE_NUM -u $GRIDDB_USERNAME/$GRIDDB_PASSWORD -w
     fi
     # Wait
     tail -f /var/lib/gridstore/log/gsstartup.log
