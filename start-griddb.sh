@@ -6,12 +6,10 @@ fi
 
 checkSystemInitialize() {
     if [ ! "$(ls -A /var/lib/gridstore/data)" ]; then
-        return 1
+        return isSystemInitialized=1
     fi
-    return 0
+    return isSystemInitialized=0
 }
-checkSystemInitialize
-isSystemInitialized=$?
 
 # usage: read_env VAR [DEFAULT]
 #    ie: read_env 'XYZ_DB_PASSWORD' 'example'
