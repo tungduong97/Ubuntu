@@ -28,10 +28,9 @@ save_config() {
 if [ "${1}" = 'griddb' ]
 then
 
+    isSystemInitialized = 0
     if [ "$(ls -A /var/lib/gridstore/data)" ]; then
         isSystemInitialized = 1
-	else
-		isSystemInitialized = 0
     fi
 
     if [ $isSystemInitialized = 0 ]; then
