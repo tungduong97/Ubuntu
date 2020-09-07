@@ -6,9 +6,9 @@ fi
 
 checkSystemInitialize() {
     if [ ! "$(ls -A /var/lib/gridstore/data)" ]; then
-        return isSystemInitialized=$?
+        return isSystemInitialized=1
     fi
-    return isSystemInitialized=$?
+    return isSystemInitialized=0
 }
 
 # usage: read_env VAR [DEFAULT]
@@ -34,6 +34,7 @@ save_config() {
 #First parameter after run images
 if [ "${1}" = 'griddb' ]
 then
+    checkSystemInitialize
     if [ $isSystemInitialized = 1 ]; then
         read_env GRIDDB_CLUSTER_NAME "dockergriddb"
         read_env GRIDDB_USERNAME 'admin'
