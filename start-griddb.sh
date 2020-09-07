@@ -5,7 +5,7 @@ if [ "${1:0:1}" = '-' ]; then
 fi
 
 checkSystemInitialize() {
-    if [ "$(ls -A /var/lib/gridstore/data)" ]; then
+    if [ ! "$(ls -A /var/lib/gridstore/data)" ]; then
         return 1
     fi
     return 0
@@ -36,7 +36,7 @@ save_config() {
 #First parameter after run images
 if [ "${1}" = 'griddb' ]
 then
-    if [ $isSystemInitialized = 0 ]; then
+    if [ $isSystemInitialized = 1 ]; then
         read_env GRIDDB_CLUSTER_NAME "dockergriddb"
         read_env GRIDDB_USERNAME 'admin'
         read_env GRIDDB_PASSWORD 'admin'
