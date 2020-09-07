@@ -6,9 +6,9 @@ fi
 
 checkSystemInitialize() {
     if [ ! "$(ls -A /var/lib/gridstore/data)" ]; then
-        return isSystemInitialized == 1
+        return isSystemInitialized=$?
     fi
-    return isSystemInitialized == 0
+    return isSystemInitialized=$?
 }
 
 # usage: read_env VAR [DEFAULT]
