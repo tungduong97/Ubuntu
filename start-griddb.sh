@@ -28,12 +28,7 @@ save_config() {
 if [ "${1}" = 'griddb' ]
 then
 
-    isSystemInitialized = 0
-    if [ "$(ls -A /var/lib/gridstore/data)" ]; then
-        isSystemInitialized = 1
-    fi
-
-    if [ $isSystemInitialized = 0 ]; then
+    if [ "$(ls -A /var/lib/gridstore/data)" = 0 ]; then
         read_env GRIDDB_CLUSTER_NAME "dockergriddb"
         read_env GRIDDB_USERNAME 'admin'
         read_env GRIDDB_PASSWORD 'admin'
