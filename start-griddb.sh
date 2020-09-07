@@ -4,13 +4,6 @@ if [ "${1:0:1}" = '-' ]; then
     set -- griddb "$@"
 fi
 
-checkSystemInitialize() {
-    if [ ! "$(ls -A /var/lib/gridstore/data)" ]; then
-        return isSystemInitialized=1
-    fi
-    return isSystemInitialized=0
-}
-
 # usage: read_env VAR [DEFAULT]
 #    ie: read_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
@@ -34,8 +27,14 @@ save_config() {
 #First parameter after run images
 if [ "${1}" = 'griddb' ]
 then
-    checkSystemInitialize
-    if [ $isSystemInitialized = 1 ]; then
+
+    if [ "$(ls -A /var/lib/gridstore/data)" ]; then
+        isSystemInitialized = 1
+	else
+		isSystemInitialized = 0
+    fi
+
+    if [ $isSystemInitialized = 0 ]; then
         read_env GRIDDB_CLUSTER_NAME "dockergriddb"
         read_env GRIDDB_USERNAME 'admin'
         read_env GRIDDB_PASSWORD 'admin'
